@@ -1,0 +1,137 @@
+@extends('master_user')
+
+@section('content')
+
+    <div class="container">
+    
+        <h3>Pembayaran</h3>
+        @if (session('error'))
+                                @alert(['type' => 'danger'])
+                                    {!! session('error') !!}
+                                @endalert
+                            @endif
+        <table class="table">
+                <thead>
+                    <tr>                       
+                        <th>Order Id</th>
+                        <th>Invoice</th>                     
+                        <th>total</th>
+                        <th></th>                        
+                    </tr>
+                </thead>
+            <form action="{{url('/confirmpayment')}}" role="form" method="POST">
+                    {!! csrf_field() !!}       
+                <tbody> 
+                        <input type="hidden" name="order_id" value="{{ $order->id }}">
+                        <input type="hidden" name="item_price_total" value="{{ $order->total }}">
+                        <input type="hidden" name="destination" value="{{ $cus->address }}">
+                        <input type="hidden" name="courier" value="JNE">
+                    <tr>
+                        <td>{{ $order->id }}</td>
+                        <td>{{ $order->invoice }}</td>                       
+                        <td>Rp.{{ $order->total }}</td>
+                        <td class=""></td>                       
+                    </tr> 
+                </tbody>
+            </table>
+            <div class="col-md-4">
+                <table class="table" border="0">
+                    <tbody>
+                    <tr>                     
+                        <td>Customer Id : {{ $cus->id }} </td>    
+                    </tr>
+                    <tr>
+                        <td>Nama : {{ $cus->name }} </td>
+                    </tr>
+                    <tr>
+                        <td>Alamat : {{ $cus->address }} </td>
+                    </tr>  
+                    <tr>
+                        <td>No.Hp : {{ $cus->phone }} </td>
+                    </tr>  
+                    <tr>
+                        <td>Email : {{ $cus->email }} </td>       
+                    </tr>      
+                    </tbody>
+               
+                </table>
+                </div><a href="{{url('/confirmpayment')}}" id="confirmpayment" class="btn btn-success btn-sm">Pembayaran</a>
+            </form> 
+            <div class="col-md-4">
+            
+                {!! csrf_field() !!}   
+                <div class="form-group">
+                    <label>Origin</label>
+                    <select id="origin" class="form-control" name="origin">
+                      <option selected="selected" value="">Pilih Origin</option>
+                      @for($i=0; $i < count($city_result['rajaongkir']['results']); $i++)
+                          <option value="{{$city_result['rajaongkir']['results'][$i]['city_id']}}">{{$city_result['rajaongkir']['results'][$i]['city_name']}}</option>";
+                      @endfor
+                    </select>
+                  </div>
+  
+                  <div class="form-group">
+                    <label>Destination</label>
+                    <select id="destination" class="form-control" name="destination">
+                      <option selected="selected" value="">Pilih Destination</option>
+                      @for($i=0; $i < count($city_result['rajaongkir']['results']); $i++)
+                          <option value="{{$city_result['rajaongkir']['results'][$i]['city_id']}}">{{$city_result['rajaongkir']['results'][$i]['city_name']}}</option>";
+                      @endfor
+                    </select>
+                  </div>
+                  <div class="from-group">
+                      <label>Kurir</label>
+                      <select id="courier" name="courier" class="form-control">
+                          <option value="jne">JNE</option>
+                          <option value="tiki">TIKI</option>
+                          <option value="pos">POS INDONESIA</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Weight</label>
+                    <input id="weight" type="number" name="weight" class="form-control" placeholder="Enter ...">
+                  </div>
+  
+                  <div class="box-footer">
+                    <input type="submit"  class="btn btn-primary" value="cek">
+                  </div>
+                
+            </div>
+
+           
+            
+            
+            
+            
+        
+    </div> <!-- end container -->
+ @endsection
+
+ <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+ crossorigin="anonymous">
+</script>
+
+<script>
+    jQuery(document).ready(function(){
+       jQuery('#cek').click(function(e){
+          e.preventDefault();
+          $.ajaxSetup({
+             headers: {
+                 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+             }
+         });
+          jQuery.ajax({
+             url: '',
+             method: 'POST',
+             data: {
+                origin: jQuery('#origin').val(),
+                destination: jQuery('#destination').val(),
+                courier: jQuery('#courier').val(),
+                weight: jQuery('#weight').val()
+             },
+             success: function(data){
+                window.location.href = "{{ url('/pembayaran') }}";
+             }});
+          });
+       });
+ </script>
